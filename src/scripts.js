@@ -1,5 +1,5 @@
 /**
- *
+ * ScriptsController class
  */
 class ScriptsController {
   /**
@@ -9,9 +9,9 @@ class ScriptsController {
    * @param  {[type]} jwt      [description]
    * @return {[type]}          [description]
    */
-  constructor(db, rabbitmq, jwt) {
+  constructor(db, ch, jwt) {
     this.db = db;
-    this.ch = rabbitmq;
+    this.ch = ch;
     this.jwt = jwt;
   }
   /**
@@ -53,9 +53,10 @@ class ScriptsController {
       const ok = await ch.assertQueue('flows')
       const msg = new Buffer(JSON.stringify(flow));
       await ch.sendToQueue('flows', msg);
+      await channel.waitForConfirms();
       await this.db.one(`
         INSERT INTO flows(userId, scriptId)
-        VALUES(${})
+        VALUES(\${userId}, \${scriptId})
       `, flow);
       response.status(200).json('SUCCESS!');
     } catch(e) {

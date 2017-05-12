@@ -1,20 +1,32 @@
 version: '2'
-networks:
-  backend:
-    driver: bridge
 services:
-  rabbitmq:
-    image: rabbitmq
+  rabbit:
+    image: rabbitmq:alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: leaflow
+      RABBITMQ_DEFAULT_PASS: leaflow
+    networks:
+      - data
+  db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_PASSWORD: leaflow
+      POSTGRES_USER: leaflow
+      POSTGRES_DB: leaflow
     networks:
       - backend
-  trigger:
+  leaftrigger:
     build:
       context: .
       dockerfile: dev.docker
-    environment:
-      - RABBIT_MQ=ampq://rabbitmq
     depends_on:
-      - rabbitmq
+      - rabbit
+      - db
     networks:
       - backend
-
+      - data
+networks:
+  backend:
+    driver: bridge
+  data:
+    driver: bridge

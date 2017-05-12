@@ -1,25 +1,30 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const cors = require('cors');
-const jwt = require('jsonwebtoken');
-const ampqlib = require('amqplib');
-const pgp = require('pg-promise')();
-const app = express();
-const db = pgp('postgres://localhost/leaflow')
-const rabbitmq = ampqlib.connect('ampq://rabbitmq')
-const rabbitmqChannel = rabbitmq.then((conn) => conn.createChannel());
-const scripts = new ScriptsController(db, jwt, rabbitmqChannel)
+/**
+ * Application class
+ */
+class Application {
+  static async main() {
+    const express = require('express');
+    const bodyParser = require('body-parser');
+    const morgan = require('morgan');
+    const cors = require('cors');
+    const jwt = require('jsonwebtoken');
+    const ScriptsController = require('./scripts');
+    const amqp = require('./amqp');
+    const db = require('./db');
+    const app = express();
+    const scripts = new ScriptsController(db, amqp, jwt);
 
-app.use(cors())
-app.use(morgan('dev'))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(scripts.authenticate)
-app.post('/triggers/:scriptId/:token', scripts.trigger)
-
-module.exports = app;
+    app.use(cors())
+      .use(morgan('dev'))
+      .use(bodyParser.json())
+      .use(bodyParser.urlencoded({extended: true}))
+      .post('/triggers/:scriptId/:token', scripts.authenticate, scripts.trigger)
+      .listen(3000);
+  }
+}
 
 if (require.main === module) {
-  app.listen(3000);
+  Application.main().catch(console.error);
+} else {
+  module.exports = Application;
 }

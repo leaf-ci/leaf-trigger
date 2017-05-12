@@ -1,0 +1,31 @@
+{
+  "name": "leaf-trigger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "sleep 10 && node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leaf-ci/leaf-trigger.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leaf-ci/leaf-trigger/issues"
+  },
+  "homepage": "https://github.com/leaf-ci/leaf-trigger#readme",
+  "dependencies": {
+    "amqplib": "^0.5.1",
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.17.1",
+    "cors": "^2.8.3",
+    "express": "^4.15.2",
+    "jsonwebtoken": "^7.4.0",
+    "morgan": "^1.8.1",
+    "pg-promise": "^5.6.8"
+  }
+}
